@@ -32,6 +32,24 @@ class ProjetoTest(unittest.TestCase):
         self.assertEqual(result["dentro_do_limite"], 1)
         self.assertEqual(result["opcoes"][0]["total_minutos"], 15)
 
+    def test_soma_de_duracoes_deve_ser_finita(self):
+        data = {
+            "origem": "Natal", "destino": "Praia",
+            "teto_reais": 20, "teto_caminhada_min": 1e308,
+            "opcoes": [{"nome": "A", "local": "Rua A", "carro": 1e308, "caminhada": 1e308, "preco": 10}],
+        }
+        with self.assertRaisesRegex(ValueError, "duração total"):
+            run(data)
+
+    def test_duracoes_inteiras_sao_somadas_sem_conversao(self):
+        tempo = 10 ** 400
+        data = {
+            "origem": "Natal", "destino": "Praia",
+            "teto_reais": 20, "teto_caminhada_min": 10,
+            "opcoes": [{"nome": "A", "local": "Rua A", "carro": tempo, "caminhada": 5, "preco": 10}],
+        }
+        self.assertEqual(run(data)["opcoes"][0]["total_minutos"], tempo + 5)
+
     def test_rejeita_custo_negativo(self):
         with self.assertRaises(ValueError):
             run(dict(origem="A", destino="B", teto_reais=-1, teto_caminhada_min=5, opcoes=[]))

@@ -11,7 +11,9 @@ def texto(value):
 
 
 def numero(value, minimo=0):
-    if type(value) not in (int, float) or not isfinite(value) or value < minimo:
+    if type(value) not in (int, float) or value < minimo or (
+        type(value) is float and not isfinite(value)
+    ):
         raise ValueError(f"Use um número finito a partir de {minimo}.")
     return value
 
@@ -52,8 +54,15 @@ def run(data):
         dirigir, andar, custo = (numero(item[campo]) for campo in ("carro", "caminhada", "preco"))
         if custo > reais or andar > caminhada:
             continue
+        try:
+            total_minutos = dirigir + andar
+        except OverflowError as exc:
+            raise ValueError("A duração total não pode ser representada.") from exc
+        if type(total_minutos) is float and not isfinite(total_minutos):
+            raise ValueError("A duração total não pode ser representada.")
+
         local = texto(item["local"])
-        opcoes.append({"nome": texto(item["nome"]), "total_minutos": dirigir + andar,
+        opcoes.append({"nome": texto(item["nome"]), "total_minutos": total_minutos,
                        "custo": custo, "mapa_carro": rota(origem, local),
                        "mapa_caminhada": rota(local, destino, "a-pe")})
     opcoes.sort(key=lambda item: (item["total_minutos"], item["custo"]))
