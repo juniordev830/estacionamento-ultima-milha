@@ -1,0 +1,22 @@
+{
+  "origem": "São Gonçalo do Amarante, RN",
+  "destino": "Mercado do Alecrim, Natal, RN",
+  "teto_reais": 20,
+  "teto_caminhada_min": 12,
+  "opcoes": [
+    {
+      "nome": "Ponto A",
+      "local": "Alecrim, Natal, RN",
+      "carro": 30,
+      "caminhada": 7,
+      "preco": 15
+    },
+    {
+      "nome": "Ponto B",
+      "local": "Praça Gentil Ferreira, Natal, RN",
+      "carro": 30,
+      "caminhada": 15,
+      "preco": 9
+    }
+  ]
+}
