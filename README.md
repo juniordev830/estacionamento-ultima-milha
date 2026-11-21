@@ -32,4 +32,7 @@ Também é possível encadear a ferramenta com outro comando usando `-` como ent
 ```bash
 cat exemplo.json | python app.py -
 ```
-\nO comparador aceita até 100 pontos de estacionamento por execução. Para valores iguais de tempo total e preço, o desempate é feito alfabeticamente pelo nome do ponto, tornando os resultados reproduzíveis.\n
+
+O comparador aceita até 100 pontos de estacionamento por execução. Para valores iguais de tempo total e preço, o desempate é feito alfabeticamente pelo nome do ponto, tornando os resultados reproduzíveis.
+
+Arquivos e entrada padrão JSON são limitados a 1 MB (1.000.000 bytes). Entradas maiores não são processadas.
