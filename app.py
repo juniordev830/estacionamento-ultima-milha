@@ -46,11 +46,18 @@ def rota(origem, destino, modo="carro", paradas=(), evitar_pedagios=False):
 
 
 def run(data):
+    if not isinstance(data, dict):
+        raise ValueError("A entrada deve ser um objeto JSON.")
+    pontos = data.get("opcoes")
+    if not isinstance(pontos, list) or len(pontos) > 100 or any(
+        not isinstance(item, dict) for item in pontos
+    ):
+        raise ValueError("Informe até 100 opções de estacionamento como objetos.")
     origem, destino = texto(data["origem"]), texto(data["destino"])
     reais = numero(data["teto_reais"])
     caminhada = numero(data["teto_caminhada_min"])
     opcoes = []
-    for item in data["opcoes"]:
+    for item in pontos:
         dirigir, andar, custo = (numero(item[campo]) for campo in ("carro", "caminhada", "preco"))
         if custo > reais or andar > caminhada:
             continue
@@ -65,7 +72,7 @@ def run(data):
         opcoes.append({"nome": texto(item["nome"]), "total_minutos": total_minutos,
                        "custo": custo, "mapa_carro": rota(origem, local),
                        "mapa_caminhada": rota(local, destino, "a-pe")})
-    opcoes.sort(key=lambda item: (item["total_minutos"], item["custo"]))
+    opcoes.sort(key=lambda item: (item["total_minutos"], item["custo"], item["nome"].casefold()))
     return {"opcoes": opcoes, "dentro_do_limite": len(opcoes)}
 
 
@@ -75,6 +82,8 @@ import sys
 from relatorio_csv import escrever_csv
 import json
 from pathlib import Path
+
+MAX_JSON_BYTES = 1_000_000
 
 
 def objeto_sem_campos_repetidos(pares):
@@ -97,19 +106,22 @@ def main():
     args = parser.parse_args()
 
     try:
-        entrada = nullcontext(sys.stdin.buffer) if args.entrada == "-" else Path(args.entrada).open(encoding="utf-8-sig")
+        entrada = nullcontext(sys.stdin.buffer) if args.entrada == "-" else Path(args.entrada).open("rb")
         with entrada as source:
-            data = json.load(
-                source,
-                object_pairs_hook=objeto_sem_campos_repetidos,
-                parse_constant=rejeitar_constante_json,
-            )
+            raw = source.read(MAX_JSON_BYTES + 1)
+        if len(raw) > MAX_JSON_BYTES:
+            raise ValueError("JSON excede o limite de 1 MB.")
+        data = json.loads(
+            raw,
+            object_pairs_hook=objeto_sem_campos_repetidos,
+            parse_constant=rejeitar_constante_json,
+        )
         if not isinstance(data, dict):
             raise ValueError("A entrada deve ser um objeto JSON.")
         result = run(data)
     except RecursionError:
         parser.exit(2, "O JSON tem níveis de aninhamento demais.\n")
-    except (KeyError, TypeError, ValueError, OSError) as exc:
+    except (KeyError, TypeError, ValueError, UnicodeError, OSError) as exc:
         parser.exit(2, f"Erro nos dados ou na execução: {exc}\n")
 
     sys.stdout.reconfigure(encoding="utf-8", newline="\n")
