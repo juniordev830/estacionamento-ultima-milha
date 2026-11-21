@@ -46,11 +46,18 @@ def rota(origem, destino, modo="carro", paradas=(), evitar_pedagios=False):
 
 
 def run(data):
+    if not isinstance(data, dict):
+        raise ValueError("A entrada deve ser um objeto JSON.")
+    pontos = data.get("opcoes")
+    if not isinstance(pontos, list) or len(pontos) > 100 or any(
+        not isinstance(item, dict) for item in pontos
+    ):
+        raise ValueError("Informe até 100 opções de estacionamento como objetos.")
     origem, destino = texto(data["origem"]), texto(data["destino"])
     reais = numero(data["teto_reais"])
     caminhada = numero(data["teto_caminhada_min"])
     opcoes = []
-    for item in data["opcoes"]:
+    for item in pontos:
         dirigir, andar, custo = (numero(item[campo]) for campo in ("carro", "caminhada", "preco"))
         if custo > reais or andar > caminhada:
             continue
@@ -65,7 +72,7 @@ def run(data):
         opcoes.append({"nome": texto(item["nome"]), "total_minutos": total_minutos,
                        "custo": custo, "mapa_carro": rota(origem, local),
                        "mapa_caminhada": rota(local, destino, "a-pe")})
-    opcoes.sort(key=lambda item: (item["total_minutos"], item["custo"]))
+    opcoes.sort(key=lambda item: (item["total_minutos"], item["custo"], item["nome"].casefold()))
     return {"opcoes": opcoes, "dentro_do_limite": len(opcoes)}
 
 
