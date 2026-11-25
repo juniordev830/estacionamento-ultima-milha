@@ -36,3 +36,8 @@ cat exemplo.json | python app.py -
 O comparador aceita até 100 pontos de estacionamento por execução. Para valores iguais de tempo total e preço, o desempate é feito alfabeticamente pelo nome do ponto, tornando os resultados reproduzíveis.
 
 Arquivos e entrada padrão JSON são limitados a 1 MB (1.000.000 bytes). Entradas maiores não são processadas.
+
+
+## Critérios de comparação
+
+Informe opcionalmente `"ordenar_por": "preco"`, `"caminhada"` ou `"tempo"` no JSON. Os limites continuam obrigatórios. A saída JSON com critério explícito inclui `minutos_caminhada`; sem a propriedade, o formato anterior é preservado. O CSV mantém suas colunas e segue a ordenação escolhida.
