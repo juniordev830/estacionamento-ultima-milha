@@ -62,6 +62,9 @@ def run(data):
     origem, destino = texto(data["origem"]), texto(data["destino"])
     reais = numero(data["teto_reais"])
     caminhada = numero(data["teto_caminhada_min"])
+    criterio = data.get("ordenar_por", "tempo")
+    if criterio not in ("tempo", "preco", "caminhada"):
+        raise ValueError("ordenar_por deve ser tempo, preco ou caminhada.")
     opcoes = []
     for item in pontos:
         dirigir, andar, custo = (numero(item[campo]) for campo in ("carro", "caminhada", "preco"))
@@ -75,10 +78,16 @@ def run(data):
             raise ValueError("A duração total não pode ser representada.")
 
         local = texto(item["local"])
-        opcoes.append({"nome": texto(item["nome"]), "total_minutos": total_minutos,
+        opcoes.append({"minutos_caminhada": andar, "nome": texto(item["nome"]), "total_minutos": total_minutos,
                        "custo": custo, "mapa_carro": rota(origem, local),
                        "mapa_caminhada": rota(local, destino, "a-pe")})
-    opcoes.sort(key=lambda item: (item["total_minutos"], item["custo"], item["nome"].casefold()))
+    campos = {"tempo": ("total_minutos", "custo"),
+              "preco": ("custo", "total_minutos"),
+              "caminhada": ("minutos_caminhada", "total_minutos", "custo")}[criterio]
+    opcoes.sort(key=lambda item: (*[item[campo] for campo in campos], item["nome"].casefold()))
+    if "ordenar_por" not in data:
+        for item in opcoes:
+            item.pop("minutos_caminhada")
     return {"opcoes": opcoes, "dentro_do_limite": len(opcoes)}
 
 

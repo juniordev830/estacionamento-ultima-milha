@@ -102,3 +102,32 @@ class JsonEstritoCliTest(unittest.TestCase):
                     self.assertEqual(resultado.returncode, 2)
                     self.assertIn(constante, resultado.stderr)
                     self.assertEqual(resultado.stdout, "")
+
+
+class CriterioEstacionamentoTest(unittest.TestCase):
+    def dados(self):
+        return dict(origem="A", destino="B", teto_reais=20, teto_caminhada_min=10,
+                    opcoes=[dict(nome="Rapido", local="C", carro=1, caminhada=5, preco=10),
+                            dict(nome="Barato", local="D", carro=9, caminhada=3, preco=5),
+                            dict(nome="Perto", local="E", carro=15, caminhada=1, preco=8)])
+
+    def test_criterios(self):
+        from app import run
+        for criterio, primeiro in (("tempo", "Rapido"), ("preco", "Barato"), ("caminhada", "Perto")):
+            with self.subTest(criterio=criterio):
+                result = run(dict(self.dados(), ordenar_por=criterio))
+                self.assertEqual(result["opcoes"][0]["nome"], primeiro)
+
+    def test_padrao_compativel(self):
+        from app import run
+        self.assertNotIn("minutos_caminhada", run(self.dados())["opcoes"][0])
+
+    def test_limites_continuam_validos(self):
+        from app import run
+        result = run(dict(self.dados(), ordenar_por="preco", teto_reais=4))
+        self.assertEqual(result["opcoes"], [])
+
+    def test_rejeita_criterio(self):
+        from app import run
+        with self.assertRaises(ValueError):
+            run(dict(self.dados(), ordenar_por="desconhecido"))
