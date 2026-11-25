@@ -36,3 +36,8 @@ cat exemplo.json | python app.py -
 O comparador aceita até 100 pontos de estacionamento por execução. Para valores iguais de tempo total e preço, o desempate é feito alfabeticamente pelo nome do ponto, tornando os resultados reproduzíveis.
 
 Arquivos e entrada padrão JSON são limitados a 1 MB (1.000.000 bytes). Entradas maiores não são processadas.
+
+
+## Novo recurso
+
+O filtro opcional `teto_total_min` limita a soma da duração de carro e caminhada, além dos limites anteriores de preço e caminhada.

@@ -62,6 +62,7 @@ def run(data):
     origem, destino = texto(data["origem"]), texto(data["destino"])
     reais = numero(data["teto_reais"])
     caminhada = numero(data["teto_caminhada_min"])
+    limite_total = numero(data["teto_total_min"]) if "teto_total_min" in data else None
     opcoes = []
     for item in pontos:
         dirigir, andar, custo = (numero(item[campo]) for campo in ("carro", "caminhada", "preco"))
@@ -74,6 +75,8 @@ def run(data):
         if type(total_minutos) is float and not isfinite(total_minutos):
             raise ValueError("A duração total não pode ser representada.")
 
+        if limite_total is not None and total_minutos > limite_total:
+            continue
         local = texto(item["local"])
         opcoes.append({"nome": texto(item["nome"]), "total_minutos": total_minutos,
                        "custo": custo, "mapa_carro": rota(origem, local),
