@@ -41,3 +41,7 @@ Arquivos e entrada padrão JSON são limitados a 1 MB (1.000.000 bytes). Entrada
 ## Critérios de comparação
 
 Informe opcionalmente `"ordenar_por": "preco"`, `"caminhada"` ou `"tempo"` no JSON. Os limites continuam obrigatórios. A saída JSON com critério explícito inclui `minutos_caminhada`; sem a propriedade, o formato anterior é preservado. O CSV mantém suas colunas e segue a ordenação escolhida.
+
+## Critérios de comparação
+
+Informe opcionalmente `"ordenar_por": "preco"`, `"caminhada"` ou `"tempo"` no JSON. Os limites continuam obrigatórios. O JSON com critério explícito inclui `minutos_caminhada`; sem a propriedade, o formato anterior é preservado. O CSV mantém suas colunas e segue a ordenação escolhida.
