@@ -1,5 +1,7 @@
 # Estacionamento e última milha
 
+**Navegação** · [Rodar](#rodar) · [Uso](#uso) · [Google Maps](#google-maps) · [Código e estudo](docs/ENGENHARIA_REVERSA.md)
+
 Compare pontos de estacionamento, com links para dirigir até lá e caminhar ao destino.
 
 ## Rodar
@@ -36,3 +38,9 @@ cat exemplo.json | python app.py -
 O comparador aceita até 100 pontos de estacionamento por execução. Para valores iguais de tempo total e preço, o desempate é feito alfabeticamente pelo nome do ponto, tornando os resultados reproduzíveis.
 
 Arquivos e entrada padrão JSON são limitados a 1 MB (1.000.000 bytes). Entradas maiores não são processadas.
+
+## Código e roteiro de estudo
+
+Que contrato deve distinguir a quilometragem de carro do tempo de caminhada? O [guia de engenharia reversa](docs/ENGENHARIA_REVERSA.md) reúne o mapa dos módulos e uma pergunta técnica baseada no projeto.
+
+Mantido por [João Junior](https://github.com/juniordev830).
